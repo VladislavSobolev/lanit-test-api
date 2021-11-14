@@ -1,6 +1,6 @@
 package org.example.model;
 
-public class Response{
+public class Order {
 	private int petId;
 	private int quantity;
 	private int id;

@@ -6,7 +6,7 @@ import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import org.example.model.Pet;
-import org.example.model.Response;
+import org.example.model.Order;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -46,34 +46,35 @@ public class StoreApiTest {
         // todo: найти оформленный заказ
         System.getProperties().load(ClassLoader.getSystemResourceAsStream("my.properties"));
         int id = 1;
-        Response response = new Response();
-        response.setId(id);
+        Order order = new Order();
+        order.setId(id);
         System.setProperty("orderId", id + "");
 
 
 
         given()
-                .body(response)
+                .body(order)
                 .when()
                 .post("/store/order")
                 .then()
                 .statusCode(200);
 
-        Thread.sleep(5000);
 
-        Pet actual = given()
+
+        Order actual = given()
                             .pathParam("orderId", id)
                             .when()
                             .get("/store/order/{orderId}")
                             .then()
                             .statusCode(200)
                             .extract().body()
-                            .as(Pet.class);
-        Assert.assertEquals(actual.getId(), response.getId());
+                            .as(Order.class);
+        Assert.assertEquals(actual.getId(), order.getId());
+        Thread.sleep(50000);
     }
 
     @Test(priority = 2)
-    public void deleteOrderTest() throws IOException {
+    public void deleteOrderTest() throws IOException, InterruptedException {
         // todo: удалить заказ
         // todo: проверить удаление заказа
         System.getProperties().load(ClassLoader.getSystemResourceAsStream("my.properties"));
@@ -83,6 +84,7 @@ public class StoreApiTest {
                 .delete("/store/order/{orderId}")
                 .then()
                 .statusCode(200);
+        Thread.sleep(5000);
         given()
                 .pathParam("orderId", System.getProperty("orderId"))
                 .when()
